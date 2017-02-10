@@ -23,4 +23,8 @@
             android:persistent="true"
     />
 
+    <Preference
+        android:key="pref_private_folder"
+        android:title="@string/private_confirm_title"/>
+
 </PreferenceScreen>

@@ -84,6 +84,17 @@
     <string name="delete_target_uninstall_label">Uninstall</string>
     <!-- Label for the info icon. [CHAR_LIMIT=20] -->
     <string name="info_target_label">App info</string>
+    <!-- Label for the private icon. [CHAR_LIMIT=20] -->
+    <string name="private_target_label">Private</string>
+
+    <string name="private_confirm_title">Private Folder</string>
+    <string name="private_confirm_msg">Sure to remove app to private folder?</string>
+    <string name="private_confirm_ok">OK</string>
+    <string name="private_confirm_cancel">Cancel</string>
+    <string name="private_set_pwd">Please set your password</string>
+    <string name="private_input_pwd">Please input your password</string>
+    <string name="pwd_set_hint">Please input 4 numbers</string>
+    <string name="pwd_warning">Please input number!</string>
 
     <!-- Permissions: -->
     <skip />

@@ -74,6 +74,7 @@ public class SearchDropTargetBar extends FrameLayout implements DragController.D
     private ButtonDropTarget mInfoDropTarget;
     private ButtonDropTarget mDeleteDropTarget;
     private ButtonDropTarget mUninstallDropTarget;
+    private ButtonDropTarget mPrivateDropTarget;
 
     public SearchDropTargetBar(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
@@ -90,14 +91,17 @@ public class SearchDropTargetBar extends FrameLayout implements DragController.D
         dragController.addDragListener(mInfoDropTarget);
         dragController.addDragListener(mDeleteDropTarget);
         dragController.addDragListener(mUninstallDropTarget);
+        dragController.addDragListener(mPrivateDropTarget);//此处是设置icon悬浮时，选项的效果
 
         dragController.addDropTarget(mInfoDropTarget);
         dragController.addDropTarget(mDeleteDropTarget);
         dragController.addDropTarget(mUninstallDropTarget);
+        dragController.addDropTarget(mPrivateDropTarget);
 
         mInfoDropTarget.setLauncher(launcher);
         mDeleteDropTarget.setLauncher(launcher);
         mUninstallDropTarget.setLauncher(launcher);
+        mPrivateDropTarget.setLauncher(launcher);
     }
 
     @Override
@@ -109,10 +113,12 @@ public class SearchDropTargetBar extends FrameLayout implements DragController.D
         mInfoDropTarget = (ButtonDropTarget) mDropTargetBar.findViewById(R.id.info_target_text);
         mDeleteDropTarget = (ButtonDropTarget) mDropTargetBar.findViewById(R.id.delete_target_text);
         mUninstallDropTarget = (ButtonDropTarget) mDropTargetBar.findViewById(R.id.uninstall_target_text);
+        mPrivateDropTarget = (ButtonDropTarget) mDropTargetBar.findViewById(R.id.private_target_text);
 
         mInfoDropTarget.setSearchDropTargetBar(this);
         mDeleteDropTarget.setSearchDropTargetBar(this);
         mUninstallDropTarget.setSearchDropTargetBar(this);
+        mPrivateDropTarget.setSearchDropTargetBar(this);
 
         // Create the various fade animations
         mDropTargetBar.setAlpha(0f);
@@ -252,5 +258,6 @@ public class SearchDropTargetBar extends FrameLayout implements DragController.D
         mInfoDropTarget.enableAccessibleDrag(enable);
         mDeleteDropTarget.enableAccessibleDrag(enable);
         mUninstallDropTarget.enableAccessibleDrag(enable);
+        mPrivateDropTarget.enableAccessibleDrag(enable);
     }
 }

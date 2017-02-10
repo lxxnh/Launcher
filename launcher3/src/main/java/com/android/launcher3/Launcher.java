@@ -93,6 +93,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Advanceable;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -249,6 +250,7 @@ public class Launcher extends Activity
     @Thunk DragLayer mDragLayer;
     private DragController mDragController;
     private View mWeightWatcher;
+    private SearchView mSearch;
 
     private AppWidgetManagerCompat mAppWidgetManager;
     private LauncherAppWidgetHost mAppWidgetHost;
@@ -1372,6 +1374,7 @@ public class Launcher extends Activity
         mLauncherView = findViewById(R.id.launcher);
         mFocusHandler = (FocusIndicatorView) findViewById(R.id.focus_indicator);
         mDragLayer = (DragLayer) findViewById(R.id.drag_layer);
+        mSearch = (SearchView) findViewById(R.id.search);
         mWorkspace = (Workspace) mDragLayer.findViewById(R.id.workspace);
         mWorkspace.setPageSwitchListener(this);
         mPageIndicators = mDragLayer.findViewById(R.id.page_indicator);
@@ -1474,6 +1477,9 @@ public class Launcher extends Activity
         }
     }
 
+    public View getSearchView() {
+        return mSearch;
+    }
     /**
      * Sets the all apps button. This method is called from {@link Hotseat}.
      */
@@ -3206,7 +3212,7 @@ public class Launcher extends Activity
                 if (mWorkspace.isInOverviewMode()) {
                     mWorkspace.startReordering(v);
                 } else {
-                    showOverviewMode(true);
+                    showOverviewMode(true);//长按Launcher触发的事件，滑动时可直接调用的接口
                 }
             } else {
                 final boolean isAllAppsButton = inHotseat && isAllAppsButtonRank(
@@ -3338,6 +3344,7 @@ public class Launcher extends Activity
     }
 
     void showOverviewMode(boolean animated) {
+        mSearch.setVisibility(View.INVISIBLE);
         mWorkspace.setVisibility(View.VISIBLE);
         mStateTransitionAnimation.startAnimationToWorkspace(mState, mWorkspace.getState(),
                 Workspace.State.OVERVIEW,

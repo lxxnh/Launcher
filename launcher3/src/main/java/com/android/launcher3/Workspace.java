@@ -23,6 +23,7 @@ import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.app.WallpaperManager;
 import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetProviderInfo;
@@ -57,6 +58,7 @@ import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityManager;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.android.launcher3.FolderIcon.FolderRingAnimator;
@@ -289,6 +291,11 @@ public class Workspace extends PagedView
             mLauncher.getModel().bindRemainingSynchronousPages();
         }
     };
+
+    //用来计数滑动手指的数量
+    private int count;
+    //计算手指滑动前的距离
+    private float oldDis;
 
     /**
      * Used to inflate the Workspace from XML.
@@ -1081,7 +1088,28 @@ public class Workspace extends PagedView
             mXDown = ev.getX();
             mYDown = ev.getY();
             mTouchDownTime = System.currentTimeMillis();
+            count = 1;
             break;
+        case MotionEvent.ACTION_POINTER_DOWN:
+            count += 1;
+            oldDis = spacing(ev);
+            break;
+        case MotionEvent.ACTION_MOVE:
+            float newY = ev.getY();
+            float newX = ev.getX();
+            if (count == 1 && Math.abs(newX - mXDown) <= 10 && mState == State.NORMAL) {//控制单指滑动，且X轴上的滑动距离要在一定范围内
+                controlSearchBar(newY - mYDown);
+            } else if (count == 2) {
+                float newDis = spacing(ev);
+                if (newDis < oldDis) {
+                    mLauncher.showOverviewMode(true);
+                } else if (newDis > oldDis && mState != State.OVERVIEW)  {
+                    //TODO
+                    //showUsualList();
+                }
+            }
+            break;
+
         case MotionEvent.ACTION_POINTER_UP:
         case MotionEvent.ACTION_UP:
             if (mTouchState == TOUCH_STATE_REST) {
@@ -1090,8 +1118,35 @@ public class Workspace extends PagedView
                     onWallpaperTap(ev);
                 }
             }
+            count = 0;
+            break;
         }
         return super.onInterceptTouchEvent(ev);
+    }
+
+    public void controlSearchBar(float disY) {
+        if (disY > 0) {
+            mLauncher.getOrCreateQsbBar().setVisibility(INVISIBLE);
+            mLauncher.getSearchView().setVisibility(VISIBLE);
+        } else {
+            mLauncher.getOrCreateQsbBar().setVisibility(VISIBLE);
+            mLauncher.getSearchView().setVisibility(INVISIBLE);
+        }
+
+    }
+
+    //获取2个点之间的距离
+    public float spacing(MotionEvent event) {
+        float x = event.getX(0) - event.getX(1);
+        float y = event.getY(0) - event.getY(1);
+        return x*x + y*y;
+    }
+
+    //TODO
+    public void showUsualList() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mLauncher);
+        builder.setTitle("常用应用");
+        builder.create().show();
     }
 
     @Override

@@ -62,6 +62,18 @@
                 style="@style/DropTargetButton"
                 android:text="@string/delete_target_uninstall_label" />
         </FrameLayout>
+
+        <FrameLayout
+            style="@style/DropTargetButtonContainer"
+            android:layout_weight="1" >
+
+            <!-- Private target -->
+
+            <com.android.launcher3.PrivateDropTarget
+                android:id="@+id/private_target_text"
+                style="@style/DropTargetButton"
+                android:text="@string/private_target_label" />
+        </FrameLayout>
     </LinearLayout>
 
 </com.android.launcher3.SearchDropTargetBar>

@@ -27,4 +27,11 @@
         android:key="pref_private_folder"
         android:title="@string/private_confirm_title"/>
 
+    <Preference android:title="@string/personalized_setting">
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:targetClass="com.android.launcher3.theme.ThemePickerActivity"
+            android:targetPackage="com.android.launcher3" />
+    </Preference>
+
 </PreferenceScreen>

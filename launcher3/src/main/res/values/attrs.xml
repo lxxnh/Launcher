@@ -116,4 +116,9 @@
     <declare-styleable name="InsettableFrameLayout_Layout">
         <attr name="layout_ignoreInsets" format="boolean" />
     </declare-styleable>
+
+    <declare-styleable name="MagicTextView">
+        <attr name="text" format="string" />
+        <attr name="textSize" format="dimension" />
+    </declare-styleable>
 </resources>

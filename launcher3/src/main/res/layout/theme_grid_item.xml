@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?><!--Hosin_messi add -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/grid_item_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dip" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="30dip"
+        android:layout_alignLeft="@id/grid_item_image"
+        android:layout_alignRight="@+id/grid_item_image"
+        android:layout_below="@id/grid_item_image"
+        android:layout_marginBottom="5dip"
+        android:layout_marginTop="-4dip"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/grid_item_theme_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_gravity="left"
+            android:padding="5dip"
+            android:textColor="@color/gray" />
+
+        <ImageView
+            android:id="@+id/grid_item_check"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="40dip"
+            android:layout_toRightOf="@id/grid_item_theme_name"
+            android:gravity="right"
+            android:padding="5dip"
+            android:visibility="invisible" />
+    </RelativeLayout>
+</RelativeLayout>

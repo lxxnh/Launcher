@@ -50,4 +50,8 @@
     <color name="widgets_view_section_text_color">#FFFFFF</color>
     <color name="widgets_view_item_text_color">#C4C4C4</color>
     <color name="widgets_cell_color">#263238</color>
+    <color name="gray">#999999</color>
+    <color name="green">#339933</color>
+    <color name="light_green">#66CC99</color>
+    <color name="white">#FFFFFF</color>
 </resources>

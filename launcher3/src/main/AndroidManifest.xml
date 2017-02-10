@@ -159,6 +159,22 @@
             android:process=":settings_process">
         </activity>
 
+        <activity
+            android:name="com.android.launcher3.theme.ThemePickerActivity"
+            android:label="@string/personalized_setting" />
+
+        <activity
+            android:name="com.android.launcher3.theme.ThemeEffectPreview"
+            android:label="@string/personalized_setting" />
+
+        <activity
+            android:name="com.android.launcher3.theme.ThemePickerActivity"
+            android:label="@string/personalized_setting" />
+
+        <activity
+            android:name="com.android.launcher3.theme.ThemeEffectPreview"
+            android:label="@string/personalized_setting" />
+
         <!-- Debugging tools -->
         <activity
             android:name="com.android.launcher3.MemoryDumpActivity"
@@ -172,14 +188,6 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
-        <activity
-            android:name="com.android.launcher3.PasswordActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
 

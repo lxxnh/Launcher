@@ -95,6 +95,7 @@
     <string name="private_input_pwd">Please input your password</string>
     <string name="pwd_set_hint">Please input 4 numbers</string>
     <string name="pwd_warning">Please input number!</string>
+    <string name="pwd_wrong">The password is wrong,please input again!</string>
 
     <!-- Permissions: -->
     <skip />

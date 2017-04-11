@@ -121,6 +121,8 @@ public class ItemInfo {
 
     public UserHandleCompat user;
 
+    public int is_private;
+
     public ItemInfo() {
         user = UserHandleCompat.myUserHandle();
     }
@@ -197,4 +199,13 @@ public class ItemInfo {
             + " spanY=" + spanY + " dropPos=" + Arrays.toString(dropPos)
             + " user=" + user + ")";
     }
+
+    public void setPrivet(int i) {
+        is_private = i;
+    }
+
+    public int getPrivate () {
+        return is_private;
+    }
+
 }

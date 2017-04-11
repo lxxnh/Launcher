@@ -17,11 +17,13 @@
 package com.android.launcher3;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceFragment;
 import android.preference.SwitchPreference;
+import android.util.Log;
 
 /**
  * Settings activity for Launcher. Currently implements the following setting: Allow rotation
@@ -41,7 +43,9 @@ public class SettingsActivity extends Activity {
      * This fragment shows the launcher preferences.
      */
     public static class LauncherSettingsFragment extends PreferenceFragment
-            implements OnPreferenceChangeListener {
+            implements OnPreferenceChangeListener, Preference.OnPreferenceClickListener{
+        private Preference mPrivatePref;
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -50,6 +54,8 @@ public class SettingsActivity extends Activity {
             SwitchPreference pref = (SwitchPreference) findPreference(
                     Utilities.ALLOW_ROTATION_PREFERENCE_KEY);
             pref.setPersistent(false);
+
+            mPrivatePref = findPreference(Utilities.PRIVATE_FOLDER_PREFERENCE_KEY);
 
             Bundle extras = new Bundle();
             extras.putBoolean(LauncherSettings.Settings.EXTRA_DEFAULT_VALUE, false);
@@ -60,6 +66,7 @@ public class SettingsActivity extends Activity {
             pref.setChecked(value.getBoolean(LauncherSettings.Settings.EXTRA_VALUE));
 
             pref.setOnPreferenceChangeListener(this);
+            mPrivatePref.setOnPreferenceClickListener(this);
         }
 
         @Override
@@ -70,6 +77,16 @@ public class SettingsActivity extends Activity {
                     LauncherSettings.Settings.CONTENT_URI,
                     LauncherSettings.Settings.METHOD_SET_BOOLEAN,
                     preference.getKey(), extras);
+            return true;
+        }
+
+        @Override
+        public boolean onPreferenceClick(Preference preference) {
+            if(preference == mPrivatePref) {
+                Intent intent = new Intent();
+                intent.setClass(getActivity(),PasswordActivity.class);
+                getContext().startActivity(intent);
+            }
             return true;
         }
     }

@@ -183,6 +183,14 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name="com.android.launcher3.PrivateFolderActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+
         <service android:name="com.android.launcher3.MemoryTracker"
             android:enabled="@bool/debug_memory_enabled"
             >

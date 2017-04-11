@@ -1098,7 +1098,7 @@ public class Workspace extends PagedView
             float newY = ev.getY();
             float newX = ev.getX();
             if (count == 1 && Math.abs(newX - mXDown) <= 10 && mState == State.NORMAL) {//控制单指滑动，且X轴上的滑动距离要在一定范围内
-                controlSearchBar(newY - mYDown);
+                //controlSearchBar(newY - mYDown);
             } else if (count == 2) {
                 float newDis = spacing(ev);
                 if (newDis < oldDis) {

@@ -1,18 +1,24 @@
 package com.android.launcher3;
 
 import android.app.Activity;
-import android.app.KeyguardManager;
+import android.content.ComponentName;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ComponentInfo;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Window;
-import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.android.launcher3.compat.UserHandleCompat;
+
+import java.util.ArrayList;
 
 /**
  * Created by zhongwenguang on 2/10/17.
@@ -28,6 +34,8 @@ public class PasswordActivity extends Activity implements TextWatcher{
     private final static String PRIVATE_PWD = "private_pwd";
     private final static String MATCH_NUMBERS = "^[0-9]*$";
     private final static int VALID_PWD_LENGTH = 4;
+    private String mPkgName;
+    private ArrayList<ItemInfo> mList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +46,8 @@ public class PasswordActivity extends Activity implements TextWatcher{
         mPwdTitle = (TextView) findViewById(R.id.set_pwd_title);
         mPwdEdit.addTextChangedListener(this);
         initPwdTitle();
+        mPkgName = getIntent().getStringExtra(PrivateDropTarget.PACKAGE_NAME);
+
     }
 
     public void initPwdTitle() {
@@ -64,12 +74,25 @@ public class PasswordActivity extends Activity implements TextWatcher{
     @Override
     public void afterTextChanged(Editable editable) {
         if(editable.toString().length() == VALID_PWD_LENGTH && editable.toString().matches(MATCH_NUMBERS)) {
-            mEdit = mSharedPrefs.edit();
-            mEdit.putString(PRIVATE_PWD,editable.toString());
-            mEdit.putBoolean(FIRST_SET_PRIVATE,false);
-            mEdit.commit();
-            //TODO
+            String pwd = mSharedPrefs.getString(PRIVATE_PWD,"");
+            if (pwd.isEmpty() || pwd.equals(editable.toString())) {
+                editSharedPrefs(editable);
+                LauncherAppState.getInstance().getIconCache().updatePrivateApp(mPkgName);//此处是更新数据库
+                Intent intent = new Intent(this, PrivateFolderActivity.class);
+                this.startActivity(intent);
+                finish();
+            } else {
+                Toast.makeText(this,R.string.pwd_wrong,Toast.LENGTH_SHORT).show();
+            }
         }
 
     }
+
+    public void editSharedPrefs(Editable editable){
+        mEdit = mSharedPrefs.edit();
+        mEdit.putString(PRIVATE_PWD,editable.toString());
+        mEdit.putBoolean(FIRST_SET_PRIVATE,false);
+        mEdit.commit();
+    }
+
 }

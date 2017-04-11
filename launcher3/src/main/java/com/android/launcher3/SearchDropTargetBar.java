@@ -21,6 +21,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.accessibility.AccessibilityManager;
 import android.view.animation.AccelerateInterpolator;
@@ -184,6 +185,8 @@ public class SearchDropTargetBar extends FrameLayout implements DragController.D
                     duration);
             animateViewAlpha(mDropTargetBarAnimator, mDropTargetBar, newState.getDropTargetBarAlpha(),
                     duration);
+            animateViewAlpha(mQSBSearchBarAnimator, ((Launcher)getContext()).getSearchView(), newState.getSearchBarAlpha(),
+                    0);
         }
     }
 

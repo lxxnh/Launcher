@@ -30,6 +30,7 @@ import android.support.v4.view.accessibility.AccessibilityEventCompat;
 import android.net.Uri;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -500,8 +501,10 @@ public class AllAppsGridAdapter extends RecyclerView.Adapter<AllAppsGridAdapter.
         switch (holder.getItemViewType()) {
             case ICON_VIEW_TYPE: {
                 AppInfo info = mApps.getAdapterItems().get(position).appInfo;
-                BubbleTextView icon = (BubbleTextView) holder.mContent;
-                icon.applyFromApplicationInfo(info);
+                if (info.getPrivate() != 1) {
+                    BubbleTextView icon = (BubbleTextView) holder.mContent;
+                    icon.applyFromApplicationInfo(info);
+                }
                 break;
             }
             case PREDICTION_ICON_VIEW_TYPE: {

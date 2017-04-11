@@ -276,10 +276,16 @@ public class AllAppsRecyclerView extends BaseRecyclerView
      */
     @Override
     public void onUpdateScrollbar(int dy) {
-        List<AlphabeticalAppsList.AdapterItem> items = mApps.getAdapterItems();
+        List<AlphabeticalAppsList.AdapterItem> items;
+        if (mApps != null) {
+
+           items  = mApps.getAdapterItems();
+        } else {
+            items = null;
+        }
 
         // Skip early if there are no items or we haven't been measured
-        if (items.isEmpty() || mNumAppsPerRow == 0) {
+        if (items != null && items.isEmpty() || mNumAppsPerRow == 0) {
             mScrollbar.setThumbOffset(-1, -1);
             return;
         }

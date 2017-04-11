@@ -3554,7 +3554,7 @@ public class Launcher extends Activity
                 mQsb.setId(R.id.qsb_widget);
                 mQsb.updateAppWidgetOptions(opts);
                 mQsb.setPadding(0, 0, 0, 0);
-                mSearchDropTargetBar.addView(mQsb);
+                //mSearchDropTargetBar.addView(mQsb);
                 mSearchDropTargetBar.setQsbSearchBar(mQsb);
             }
         }

@@ -24,18 +24,18 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
+    <SearchView
+        android:id="@+id/search"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_margin="10dp"
+        android:background="#ffffffff" />
     <com.android.launcher3.DragLayer
         android:id="@+id/drag_layer"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-       <SearchView
-           android:id="@+id/search"
-           android:layout_width="match_parent"
-           android:layout_height="45dp"
-           android:layout_margin="10dp"
-           android:background="#ffffffff"
-           android:visibility="gone"/>
+
 
         <com.android.launcher3.FocusIndicatorView
             android:id="@+id/focus_indicator"

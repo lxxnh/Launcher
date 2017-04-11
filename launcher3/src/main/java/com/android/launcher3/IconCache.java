@@ -531,7 +531,7 @@ public class IconCache {
      * Retrieves the entry from the cache. If the entry is not present, it creates a new entry.
      * This method is not thread safe, it must be called from a synchronized method.
      */
-    private CacheEntry cacheLocked(ComponentName componentName, LauncherActivityInfoCompat info,
+    private CacheEntry  cacheLocked(ComponentName componentName, LauncherActivityInfoCompat info,
             UserHandleCompat user, boolean usePackageIcon, boolean useLowResIcon) {
         ComponentKey cacheKey = new ComponentKey(componentName, user);
         CacheEntry entry = mCache.get(cacheKey);
@@ -710,6 +710,18 @@ public class IconCache {
         return false;
     }
 
+    public Cursor queryInfoFromDB(){
+        Cursor cr = mIconDb.getReadableDatabase().query(IconDB.TABLE_NAME, new String[]{IconDB.COLUMN_LABEL,IconDB.COLUMN_ICON},
+                IconDB.COLUMN_PRIVATE + "=1",null,null,null,null);
+        return cr;
+    }
+
+    public void updatePrivateApp(String componentName){
+        ContentValues values = new ContentValues();
+        values.put(IconDB.COLUMN_PRIVATE,1);
+        mIconDb.getWritableDatabase().update(IconDB.TABLE_NAME,values,IconDB.COLUMN_COMPONENT + "=?",new String[]{componentName});
+    }
+
     public static class IconLoadRequest {
         private final Runnable mRunnable;
         private final Handler mHandler;
@@ -801,6 +813,7 @@ public class IconCache {
         private final static String COLUMN_ICON_LOW_RES = "icon_low_res";
         private final static String COLUMN_LABEL = "label";
         private final static String COLUMN_SYSTEM_STATE = "system_state";
+        private final static String COLUMN_PRIVATE = "is_private";
 
         public IconDB(Context context) {
             super(context, LauncherFiles.APP_ICONS_DB, null, DB_VERSION);
@@ -817,6 +830,7 @@ public class IconCache {
                     COLUMN_ICON_LOW_RES + " BLOB, " +
                     COLUMN_LABEL + " TEXT, " +
                     COLUMN_SYSTEM_STATE + " TEXT, " +
+                    COLUMN_PRIVATE + " INTEGER NOT NULL DEFAULT 0, " +
                     "PRIMARY KEY (" + COLUMN_COMPONENT + ", " + COLUMN_USER + ") " +
                     ");");
         }

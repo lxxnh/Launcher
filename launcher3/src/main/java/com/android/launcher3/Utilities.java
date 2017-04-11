@@ -114,10 +114,14 @@ public final class Utilities {
     public static final String ALLOW_ROTATION_PREFERENCE_KEY = "pref_allowRotation";
     public static final String PRIVATE_FOLDER_PREFERENCE_KEY = "pref_private_folder";
     public static final String PRIVATE_CHANGE_PASSWORD_PREFERENCE_KEY = "pref_private_change_pwd";
+    public static final String PRIVATE_RESET_KEY = "pref_private_reset";
     public static final String CHANGE_PWD_FLAG = "change_pwd";
     //Change private folder password
     public static final int ALLOW_CHANGE_PWD = 1;
-    public static final int NO_CHANGE_PWD = 0;
+    public static final int NO_CHANGE_PWD = -1;
+
+    public final static String FIRST_SET_PRIVATE = "first_set_private";
+    public final static String PRIVATE_PWD = "private_pwd";
 
     public static boolean isPropertyEnabled(String propertyName) {
         return Log.isLoggable(propertyName, Log.VERBOSE);

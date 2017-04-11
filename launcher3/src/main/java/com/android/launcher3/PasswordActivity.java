@@ -30,8 +30,6 @@ public class PasswordActivity extends Activity implements TextWatcher{
     private TextView mPwdTitle;
     private SharedPreferences mSharedPrefs;
     private SharedPreferences.Editor mEdit;
-    private final static String FIRST_SET_PRIVATE = "first_set_private";
-    private final static String PRIVATE_PWD = "private_pwd";
     private final static String MATCH_NUMBERS = "^[0-9]*$";
     private final static int VALID_PWD_LENGTH = 4;
     private String mPkgName;
@@ -54,8 +52,8 @@ public class PasswordActivity extends Activity implements TextWatcher{
     }
 
     public void initPwdTitle() {
-        mSharedPrefs = this.getSharedPreferences(LauncherFiles.SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE);
-        if(mSharedPrefs.getBoolean(FIRST_SET_PRIVATE,true)) {
+        mSharedPrefs = getApplicationContext().getSharedPreferences(LauncherFiles.SHARED_PREFERENCES_KEY, Context.MODE_MULTI_PROCESS);
+        if(mSharedPrefs.getBoolean(Utilities.FIRST_SET_PRIVATE,true)) {
             mPwdTitle.setText(R.string.private_set_pwd);
         } else {
             mPwdTitle.setText(R.string.private_input_pwd);
@@ -83,9 +81,9 @@ public class PasswordActivity extends Activity implements TextWatcher{
         //4.重置密码
 
         if (editable.toString().length() == VALID_PWD_LENGTH && editable.toString().matches(MATCH_NUMBERS)) {
-            String pwd = mSharedPrefs.getString(PRIVATE_PWD, "");
+            String pwd = mSharedPrefs.getString(Utilities.PRIVATE_PWD, "");
             if(pwd.isEmpty()) {
-                if (mAllowChangePwd == -1) {
+                if (mAllowChangePwd == Utilities.NO_CHANGE_PWD) {
                     Toast.makeText(this, R.string.reset_private_pwd_successfully, Toast.LENGTH_SHORT).show();
                 }
                 editSharedPrefs(editable);
@@ -98,7 +96,7 @@ public class PasswordActivity extends Activity implements TextWatcher{
                     mPwdTitle.setText(R.string.reset_private_pwd);
                     clearSharedPrefs(editable);
                     editable.clear();
-                    mAllowChangePwd = -1;
+                    mAllowChangePwd = Utilities.NO_CHANGE_PWD;
                     return;
                 }
                 startIntent();
@@ -129,14 +127,14 @@ public class PasswordActivity extends Activity implements TextWatcher{
 
     public void editSharedPrefs(Editable editable){
         mEdit = mSharedPrefs.edit();
-        mEdit.putString(PRIVATE_PWD,editable.toString());
-        mEdit.putBoolean(FIRST_SET_PRIVATE,false);
+        mEdit.putString(Utilities.PRIVATE_PWD,editable.toString());
+        mEdit.putBoolean(Utilities.FIRST_SET_PRIVATE,false);
         mEdit.commit();
     }
 
     public void clearSharedPrefs(Editable editable){
         mEdit = mSharedPrefs.edit();
-        mEdit.putString(PRIVATE_PWD,"");
+        mEdit.putString(Utilities.PRIVATE_PWD,"");
         mEdit.commit();
     }
 

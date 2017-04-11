@@ -32,6 +32,10 @@
         android:key="pref_private_change_pwd"
         android:title="@string/private_change_pwd" />
 
+    <Preference
+        android:key="pref_private_reset"
+        android:title="@string/reset_private_folder" />
+
     <Preference android:title="@string/personalized_setting">
         <intent
             android:action="android.intent.action.MAIN"

@@ -36,6 +36,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Icon;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.text.TextUtils;
@@ -727,8 +728,20 @@ public class IconCache {
     public void removePrivateApp(String pkgName) {
         ContentValues values = new ContentValues();
         values.put(IconDB.COLUMN_PRIVATE,0);
+        values.put(IconDB.COLUMN_CLASSNAME,"");
+        values.put(IconDB.COLUMN_PKGNAME,"");
         mIconDb.getWritableDatabase().update(IconDB.TABLE_NAME,values,IconDB.COLUMN_PKGNAME + "=?", new String[]{pkgName});
     }
+
+    public void clearPrivateApps() {
+        ContentValues values = new ContentValues();
+        values.put(IconDB.COLUMN_PRIVATE,0);
+        values.put(IconDB.COLUMN_CLASSNAME,"");
+        values.put(IconDB.COLUMN_PKGNAME,"");
+        mIconDb.getWritableDatabase().update(IconDB.TABLE_NAME,values,IconDB.COLUMN_PRIVATE + "=1",null);
+    }
+
+
 
     public static class IconLoadRequest {
         private final Runnable mRunnable;

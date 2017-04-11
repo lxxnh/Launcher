@@ -89,6 +89,8 @@
 
     <string name="private_confirm_title">Private Folder</string>
     <string name="private_change_pwd">Change Private Folder Password</string>
+    <string name="reset_private_folder">Reset Private Folder</string>
+    <string name="reset_private_folder_msg">The password and the apps in private folder will be reset.</string>
     <string name="private_confirm_msg">Sure to remove app to private folder?</string>
     <string name="private_confirm_ok">OK</string>
     <string name="private_confirm_cancel">Cancel</string>

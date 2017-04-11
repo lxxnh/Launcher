@@ -17,9 +17,12 @@
 package com.android.launcher3;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
@@ -28,6 +31,11 @@ import android.preference.PreferenceScreen;
 import android.preference.SwitchPreference;
 import android.text.LoginFilter;
 import android.util.Log;
+
+import com.android.launcher3.compat.UserHandleCompat;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Settings activity for Launcher. Currently implements the following setting: Allow rotation
@@ -41,6 +49,7 @@ public class SettingsActivity extends Activity {
         getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, new LauncherSettingsFragment())
                 .commit();
+
     }
 
     /**
@@ -50,7 +59,10 @@ public class SettingsActivity extends Activity {
             implements OnPreferenceChangeListener, Preference.OnPreferenceClickListener{
         private Preference mPrivatePref;
         private Preference mPrivateChangePwdPref;
+        private Preference mPrivateReset;
         private SharedPreferences mPreferences;
+        private SharedPreferences.Editor mEdit;
+        private List<String> mList;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -63,6 +75,7 @@ public class SettingsActivity extends Activity {
 
             mPrivatePref = findPreference(Utilities.PRIVATE_FOLDER_PREFERENCE_KEY);
             mPrivateChangePwdPref = findPreference(Utilities.PRIVATE_CHANGE_PASSWORD_PREFERENCE_KEY);
+            mPrivateReset = findPreference(Utilities.PRIVATE_RESET_KEY);
 
             Bundle extras = new Bundle();
             extras.putBoolean(LauncherSettings.Settings.EXTRA_DEFAULT_VALUE, false);
@@ -75,14 +88,16 @@ public class SettingsActivity extends Activity {
             pref.setOnPreferenceChangeListener(this);
             mPrivatePref.setOnPreferenceClickListener(this);
             mPrivateChangePwdPref.setOnPreferenceClickListener(this);
-            mPreferences = getContext().getSharedPreferences(LauncherFiles.SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE);
+            mPrivateReset.setOnPreferenceClickListener(this);
+            mPreferences = getContext().getSharedPreferences(LauncherFiles.SHARED_PREFERENCES_KEY, Context.MODE_MULTI_PROCESS);
+            mList = new ArrayList<String>();
         }
 
         @Override
         public void onResume() {
             super.onResume();
             PreferenceScreen screen = (PreferenceScreen) findPreference(Utilities.PREF_SCREEN_KEY);
-            String pwd = mPreferences.getString("private_pwd","");
+            String pwd = mPreferences.getString(Utilities.PRIVATE_PWD,"");
             if(pwd.isEmpty()) {
                 screen.removePreference(mPrivateChangePwdPref);
             } else {
@@ -114,7 +129,51 @@ public class SettingsActivity extends Activity {
                 intent.putExtra(Utilities.CHANGE_PWD_FLAG,Utilities.ALLOW_CHANGE_PWD);
                 getContext().startActivity(intent);
             }
+            if(preference == mPrivateReset) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle(R.string.reset_private_folder);
+                builder.setMessage(R.string.reset_private_folder_msg);
+                builder.setPositiveButton(R.string.private_confirm_ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        removeSharedPreference();
+                        LauncherAppState.setApplicationContext(getActivity());
+                        LauncherAppState app = LauncherAppState.getInstance();
+                        Cursor cr = LauncherAppState.getInstance().getIconCache().queryInfoFromDB();
+                        while (cr.moveToNext()) {
+                            String pkgName = cr.getString(2);
+                            mList.add(pkgName);
+                        }
+                        for(int j=0; j<mList.size(); j++) {
+                            app.getModel().mBgAllAppsList.removePrivatedPackage(mList.get(j), UserHandleCompat.myUserHandle());
+                        }
+
+                        //TODO 这里有问题。由于SettingsActivity是独立进行，app.getModel().getCallback()为null
+                        app.getModel().getCallback().bindAppsAdd(LauncherAppState.getInstance().getModel().mBgAllAppsList.privatedRemoved);
+                        app.getIconCache().clearPrivateApps();
+
+                        dialogInterface.dismiss();
+                    }
+                });
+                builder.setNegativeButton(R.string.private_confirm_cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+                builder.create().show();
+            }
+
             return true;
+        }
+
+
+        //reset the values of private folder
+        public void removeSharedPreference() {
+            mEdit = mPreferences.edit();
+            mEdit.putBoolean(Utilities.FIRST_SET_PRIVATE,true);
+            mEdit.putString(Utilities.PRIVATE_PWD,"");
+            mEdit.commit();
         }
     }
 }

@@ -227,7 +227,7 @@ public class LauncherStateTransitionAnimation {
 
         // Animate the search bar
         startWorkspaceSearchBarAnimation(animation, fromWorkspaceState, toWorkspaceState,
-                animated ? revealDuration : 0, overlaySearchBarView);
+                animated ? revealDuration : 0, overlaySearchBarView);//改变allAppList页面背景
 
         if (animated && initialized) {
             // Setup the reveal view animation

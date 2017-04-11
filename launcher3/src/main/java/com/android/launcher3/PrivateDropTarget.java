@@ -20,6 +20,7 @@ import java.io.Serializable;
 
 public class PrivateDropTarget extends ButtonDropTarget {
     public final static String PACKAGE_NAME = "pkgName";
+    public final static String CLASS_NAME = "className";
 
     public PrivateDropTarget(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
@@ -51,6 +52,7 @@ public class PrivateDropTarget extends ButtonDropTarget {
                 //TODO 设置隐私文件
                 Intent intent = new Intent(mLauncher,PasswordActivity.class);
                 intent.putExtra(PACKAGE_NAME,((AppInfo)d.dragInfo).componentName.flattenToString());
+                intent.putExtra(CLASS_NAME,((AppInfo)d.dragInfo).componentName.getClassName());
                 mLauncher.startActivity(intent);
             }
         });

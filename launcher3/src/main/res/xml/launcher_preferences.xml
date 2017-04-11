@@ -14,7 +14,8 @@
      limitations under the License.
 -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:key="pref_screen">
 
     <SwitchPreference
             android:key="pref_allowRotation"
@@ -26,6 +27,10 @@
     <Preference
         android:key="pref_private_folder"
         android:title="@string/private_confirm_title"/>
+
+    <Preference
+        android:key="pref_private_change_pwd"
+        android:title="@string/private_change_pwd" />
 
     <Preference android:title="@string/personalized_setting">
         <intent

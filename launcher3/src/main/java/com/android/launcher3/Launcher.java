@@ -4198,7 +4198,40 @@ public class Launcher extends Activity
 
         if (mAppsView != null) {
             mAppsView.updateApps(apps);
+            mAppsView.removeApps(apps);
         }
+    }
+
+    public void bindAppsRemoved(final ArrayList<AppInfo> apps) {
+        Runnable r = new Runnable() {
+            public void run() {
+                bindAppsRemoved(apps);
+            }
+        };
+        if (waitUntilResume(r)) {
+            return;
+        }
+
+        if (mAppsView != null) {
+            mAppsView.removeApps(apps);
+        }
+
+    }
+
+    public void bindAppsAdd(final ArrayList<AppInfo> apps) {
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                bindAppsAdd(apps);
+            }
+        };
+        if (waitUntilResume(r)) {
+            return;
+        }
+        if (mAppsView != null) {
+            mAppsView.addApps(apps);
+        }
+
     }
 
     @Override

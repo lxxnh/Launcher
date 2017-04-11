@@ -88,6 +88,7 @@
     <string name="private_target_label">Private</string>
 
     <string name="private_confirm_title">Private Folder</string>
+    <string name="private_change_pwd">Change Private Folder Password</string>
     <string name="private_confirm_msg">Sure to remove app to private folder?</string>
     <string name="private_confirm_ok">OK</string>
     <string name="private_confirm_cancel">Cancel</string>
@@ -96,6 +97,9 @@
     <string name="pwd_set_hint">Please input 4 numbers</string>
     <string name="pwd_warning">Please input number!</string>
     <string name="pwd_wrong">The password is wrong,please input again!</string>
+    <string name="remove_from_private">Sure to remove app from private folder?</string>
+    <string name="reset_private_pwd">Please reset your password</string>
+    <string name="reset_private_pwd_successfully">Reset password successfully</string>
 
     <!-- Permissions: -->
     <skip />

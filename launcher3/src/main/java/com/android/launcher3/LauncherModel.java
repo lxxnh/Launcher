@@ -197,6 +197,8 @@ public class LauncherModel extends BroadcastReceiver
                                   ArrayList<ItemInfo> addAnimated,
                                   ArrayList<AppInfo> addedApps);
         public void bindAppsUpdated(ArrayList<AppInfo> apps);
+        public void bindAppsRemoved(ArrayList<AppInfo> apps);
+        public void bindAppsAdd(ArrayList<AppInfo> apps);
         public void bindShortcutsChanged(ArrayList<ShortcutInfo> updated,
                 ArrayList<ShortcutInfo> removed, UserHandleCompat user);
         public void bindWidgetsRestored(ArrayList<LauncherAppWidgetInfo> widgets);
@@ -1080,7 +1082,7 @@ public class LauncherModel extends BroadcastReceiver
     /**
      * Removes the specified items from the database
      * @param context
-     * @param item
+     * @param items
      */
     static void deleteItemsFromDatabase(Context context, final ArrayList<? extends ItemInfo> items) {
         final ContentResolver cr = context.getContentResolver();
@@ -3096,6 +3098,17 @@ public class LauncherModel extends BroadcastReceiver
                         Callbacks cb = getCallback();
                         if (callbacks == cb && cb != null) {
                             callbacks.bindAppsUpdated(modifiedFinal);
+                        }
+                    }
+                });
+            }
+
+            if (removedApps != null) {
+                mHandler.post(new Runnable() {
+                    public void run() {
+                        Callbacks cb = getCallback();
+                        if (callbacks == cb && cb != null) {
+                            callbacks.bindAppsRemoved(removedApps);
                         }
                     }
                 });

@@ -18,6 +18,7 @@ package com.android.launcher3;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.util.Log;
 
 import com.android.launcher3.compat.LauncherActivityInfoCompat;
 import com.android.launcher3.compat.LauncherAppsCompat;
@@ -44,6 +45,11 @@ class AllAppsList {
     public ArrayList<AppInfo> removed = new ArrayList<AppInfo>();
     /** The list of apps that have been modified since the last notify() call. */
     public ArrayList<AppInfo> modified = new ArrayList<AppInfo>();
+
+    /** The list of apps that have been moved to private folder*/
+    public ArrayList<AppInfo> privated = new ArrayList<AppInfo>();
+
+    public ArrayList<AppInfo> privatedRemoved = new ArrayList<AppInfo>();
 
     private IconCache mIconCache;
 
@@ -116,6 +122,33 @@ class AllAppsList {
                 data.remove(i);
             }
         }
+    }
+
+    public void privatedPackage(String packageName, UserHandleCompat user) {
+        final List<AppInfo> data = this.data;
+        for (int i = data.size() - 1; i >= 0; i--) {
+            AppInfo info = data.get(i);
+            final ComponentName component = info.intent.getComponent();
+            if (info.user.equals(user) && packageName.equals(component.getPackageName())) {
+                privated.add(info);
+            }
+        }
+    }
+
+
+
+
+    public void removePrivatedPackage(String packageName, UserHandleCompat user) {
+        final List<AppInfo> data = this.data;
+        for (int i = data.size() - 1; i >= 0; i--) {
+            AppInfo info = data.get(i);
+            final ComponentName component = info.intent.getComponent();
+            if (info.user.equals(user) && packageName.equals(component.getPackageName())) {
+                privated.remove(info);
+                privatedRemoved.add(info);
+            }
+        }
+
     }
 
     public void updateIconsAndLabels(HashSet<String> packages, UserHandleCompat user,

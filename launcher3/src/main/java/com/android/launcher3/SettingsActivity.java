@@ -17,12 +17,16 @@
 package com.android.launcher3;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceScreen;
 import android.preference.SwitchPreference;
+import android.text.LoginFilter;
 import android.util.Log;
 
 /**
@@ -45,6 +49,8 @@ public class SettingsActivity extends Activity {
     public static class LauncherSettingsFragment extends PreferenceFragment
             implements OnPreferenceChangeListener, Preference.OnPreferenceClickListener{
         private Preference mPrivatePref;
+        private Preference mPrivateChangePwdPref;
+        private SharedPreferences mPreferences;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -56,6 +62,7 @@ public class SettingsActivity extends Activity {
             pref.setPersistent(false);
 
             mPrivatePref = findPreference(Utilities.PRIVATE_FOLDER_PREFERENCE_KEY);
+            mPrivateChangePwdPref = findPreference(Utilities.PRIVATE_CHANGE_PASSWORD_PREFERENCE_KEY);
 
             Bundle extras = new Bundle();
             extras.putBoolean(LauncherSettings.Settings.EXTRA_DEFAULT_VALUE, false);
@@ -67,6 +74,20 @@ public class SettingsActivity extends Activity {
 
             pref.setOnPreferenceChangeListener(this);
             mPrivatePref.setOnPreferenceClickListener(this);
+            mPrivateChangePwdPref.setOnPreferenceClickListener(this);
+            mPreferences = getContext().getSharedPreferences(LauncherFiles.SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE);
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            PreferenceScreen screen = (PreferenceScreen) findPreference(Utilities.PREF_SCREEN_KEY);
+            String pwd = mPreferences.getString("private_pwd","");
+            if(pwd.isEmpty()) {
+                screen.removePreference(mPrivateChangePwdPref);
+            } else {
+                screen.addPreference(mPrivateChangePwdPref);
+            }
         }
 
         @Override
@@ -85,6 +106,12 @@ public class SettingsActivity extends Activity {
             if(preference == mPrivatePref) {
                 Intent intent = new Intent();
                 intent.setClass(getActivity(),PasswordActivity.class);
+                getContext().startActivity(intent);
+            }
+            if(preference == mPrivateChangePwdPref) {
+                Intent intent = new Intent();
+                intent.setClass(getActivity(),PasswordActivity.class);
+                intent.putExtra(Utilities.CHANGE_PWD_FLAG,Utilities.ALLOW_CHANGE_PWD);
                 getContext().startActivity(intent);
             }
             return true;

@@ -711,15 +711,23 @@ public class IconCache {
     }
 
     public Cursor queryInfoFromDB(){
-        Cursor cr = mIconDb.getReadableDatabase().query(IconDB.TABLE_NAME, new String[]{IconDB.COLUMN_LABEL,IconDB.COLUMN_ICON},
+        Cursor cr = mIconDb.getReadableDatabase().query(IconDB.TABLE_NAME, new String[]{IconDB.COLUMN_LABEL,IconDB.COLUMN_ICON,IconDB.COLUMN_PKGNAME,IconDB.COLUMN_CLASSNAME},
                 IconDB.COLUMN_PRIVATE + "=1",null,null,null,null);
         return cr;
     }
 
-    public void updatePrivateApp(String componentName){
+    public void updatePrivateApp(String componentName, String pkgName, String className){
         ContentValues values = new ContentValues();
         values.put(IconDB.COLUMN_PRIVATE,1);
+        values.put(IconDB.COLUMN_PKGNAME,pkgName);
+        values.put(IconDB.COLUMN_CLASSNAME,className);
         mIconDb.getWritableDatabase().update(IconDB.TABLE_NAME,values,IconDB.COLUMN_COMPONENT + "=?",new String[]{componentName});
+    }
+
+    public void removePrivateApp(String pkgName) {
+        ContentValues values = new ContentValues();
+        values.put(IconDB.COLUMN_PRIVATE,0);
+        mIconDb.getWritableDatabase().update(IconDB.TABLE_NAME,values,IconDB.COLUMN_PKGNAME + "=?", new String[]{pkgName});
     }
 
     public static class IconLoadRequest {
@@ -814,6 +822,8 @@ public class IconCache {
         private final static String COLUMN_LABEL = "label";
         private final static String COLUMN_SYSTEM_STATE = "system_state";
         private final static String COLUMN_PRIVATE = "is_private";
+        private final static String COLUMN_PKGNAME = "package_name";
+        private final static String COLUMN_CLASSNAME = "class_name";
 
         public IconDB(Context context) {
             super(context, LauncherFiles.APP_ICONS_DB, null, DB_VERSION);
@@ -831,6 +841,8 @@ public class IconCache {
                     COLUMN_LABEL + " TEXT, " +
                     COLUMN_SYSTEM_STATE + " TEXT, " +
                     COLUMN_PRIVATE + " INTEGER NOT NULL DEFAULT 0, " +
+                    COLUMN_PKGNAME + " TEXT, " +
+                    COLUMN_CLASSNAME + " TEXT, " +
                     "PRIMARY KEY (" + COLUMN_COMPONENT + ", " + COLUMN_USER + ") " +
                     ");");
         }

@@ -63,6 +63,7 @@ public class ImageAdapter extends BaseAdapter {
         String name = mContext.getSharedPreferences(
                 Utils.SHARED_PREFRENCE,
                 Context.MODE_PRIVATE).getString(Utils.NAME_KEY, "default");
+        android.util.Log.d("lxx", "name="+name);
         if (name.equals((String) map.get(Utils.NAME_KEY))) {
             check.setVisibility(View.VISIBLE);
         } else {

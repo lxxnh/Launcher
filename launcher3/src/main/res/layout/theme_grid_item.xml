@@ -34,13 +34,11 @@
 
         <ImageView
             android:id="@+id/grid_item_check"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="30dip"
+            android:layout_height="30dip"
             android:layout_alignParentRight="true"
-            android:layout_marginLeft="40dip"
             android:layout_toRightOf="@id/grid_item_theme_name"
-            android:gravity="right"
-            android:padding="5dip"
+            android:src="@drawable/ic_item_checked"
             android:visibility="invisible" />
     </RelativeLayout>
 </RelativeLayout>

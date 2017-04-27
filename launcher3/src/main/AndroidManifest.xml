@@ -166,6 +166,14 @@
             android:name="com.android.launcher3.theme.ThemeEffectPreview"
             android:label="@string/personalized_setting" />
 
+        <activity
+            android:name="com.android.launcher3.PasswordActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+
         <!-- Debugging tools -->
         <activity
             android:name="com.android.launcher3.MemoryDumpActivity"

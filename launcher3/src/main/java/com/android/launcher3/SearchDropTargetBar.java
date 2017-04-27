@@ -185,8 +185,8 @@ public class SearchDropTargetBar extends FrameLayout implements DragController.D
                     duration);
             animateViewAlpha(mDropTargetBarAnimator, mDropTargetBar, newState.getDropTargetBarAlpha(),
                     duration);
-            animateViewAlpha(mQSBSearchBarAnimator, ((Launcher)getContext()).getSearchView(), newState.getSearchBarAlpha(),
-                    0);
+//            animateViewAlpha(mQSBSearchBarAnimator, ((Launcher)getContext()).getSearchView(), newState.getSearchBarAlpha(),
+//                    0);
         }
     }
 

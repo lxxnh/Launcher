@@ -1733,6 +1733,19 @@ public class Workspace extends PagedView
         updatePageAlphaValues(screenCenter);
         updateStateForCustomContent(screenCenter);
         enableHwLayersOnVisiblePages();
+
+        //add animation
+        for (int i = 0; i < getChildCount(); i++) {
+            View v = getPageAt(i);
+            if (v != null) {
+                float scrollProgress = getScrollProgress(screenCenter, v, i);
+                float rotation = -20 * 5 * scrollProgress;
+                v.setRotation(rotation);
+                v.setCameraDistance(mDensity * 14000);
+                v.setPivotX(v.getMeasuredWidth() * 0.5f);
+                v.setPivotY(v.getMeasuredHeight());
+            }
+        }
     }
 
     protected void onAttachedToWindow() {

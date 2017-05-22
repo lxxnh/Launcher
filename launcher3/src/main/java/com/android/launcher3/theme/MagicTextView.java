@@ -45,7 +45,6 @@ public class MagicTextView extends View {
                     break;
             }
         }
-        Log.d("lxx", "mTextSize=" + mTextSize);
         mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mTextPaint.setTextSize(mTextSize);
         mTextBounds = new Rect();

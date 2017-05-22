@@ -253,7 +253,6 @@ public final class Utilities {
             sOldBounds.set(icon.getBounds());
             icon.setBounds(left, top, left+width, top+height);
             icon.draw(canvas);
-            Log.d("lxx", "width="+width+" height="+height);
             if (!key.equals("default")) {
                 paint.setXfermode(new PorterDuffXfermode(android.graphics.PorterDuff.Mode.DST_ATOP));
                 try {

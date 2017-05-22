@@ -27,7 +27,6 @@ public class Utils {
         try {
             String[] themes = context.getAssets().list(context.getString(R.string.theme));
             for (String theme : themes) {
-                Log.d("lxx", "theme=" + theme);
                 String path = context.getString(R.string.theme) + "/" + theme + "/"
                         + context.getString(R.string.preview) + "/" + "thumbnail.jpg";
                 Bitmap bitmap = BitmapFactory

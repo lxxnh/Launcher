@@ -89,7 +89,6 @@ public class ThemePickerActivity extends FragmentActivity implements View.OnClic
 
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            Log.d("lxx", "position=" + position + " positionOffset=" + positionOffset + " positionOffsetPixels=" + positionOffsetPixels);
             if (positionOffset > 0) {
                 MagicTextView leftView = mViewList.get(position);
                 float leftViewScale = (float) 1.0 + (1 - positionOffset) / 5;

@@ -24,7 +24,6 @@ public class ThemeFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d("lxx", "create----");
         mView = inflater.inflate(R.layout.theme_picker, null);
         initView();
         initData();

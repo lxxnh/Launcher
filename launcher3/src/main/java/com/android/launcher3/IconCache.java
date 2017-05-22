@@ -152,7 +152,6 @@ public class IconCache {
 
     private Drawable getFullResIcon(Resources resources, int iconId) {
         Drawable d;
-        Log.d("lxx", "3333333333333333="+iconId);
         try {
             d = resources.getDrawableForDensity(iconId, mIconDpi);
         } catch (Resources.NotFoundException e) {
@@ -163,7 +162,6 @@ public class IconCache {
     }
 
     public Drawable getFullResIcon(String packageName, int iconId) {
-        Log.d("lxx", "222222222222222222="+packageName);
         Resources resources;
         try {
             resources = mPackageManager.getResourcesForApplication(packageName);
@@ -188,7 +186,6 @@ public class IconCache {
         InputStream is = null ;
         try {
             drawableName = convertToIconResName(info.name) + ".png";
-            Log.d("lxx", "1111111111111111="+drawableName);
             array = mContext.getAssets().list(mContext.getString(R.string.theme) + "/" + themeKeyname + "/"
                     + mContext.getString(R.string.icon));
             list = Arrays.asList(array);
@@ -629,12 +626,10 @@ public class IconCache {
                         + mContext.getString(R.string.icon));
                 list = Arrays.asList(array);
                 String drawableName = convertToIconResName(componentName.getClassName()) + ".png";
-                Log.d("lxx", "componentName="+componentName+" drawableName="+drawableName);
                 if (list.contains(drawableName)) {
                     iconpath = mContext.getString(R.string.theme) + "/" + themeKeyname + "/"
                             + mContext.getString(R.string.icon) + "/"
                             + drawableName;
-                    Log.d("lxx", "***********");
                     is = mContext.getAssets().open(iconpath);
                     entry.icon = BitmapFactory.decodeStream(is);
                 }

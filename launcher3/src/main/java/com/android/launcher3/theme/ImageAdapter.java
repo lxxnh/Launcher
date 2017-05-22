@@ -54,11 +54,11 @@ public class ImageAdapter extends BaseAdapter {
         themeName = (TextView) convertView.findViewById(R.id.grid_item_theme_name);
         check = (ImageView) convertView.findViewById(R.id.grid_item_check);
         HashMap<String, Object> map = mThemes.get(position);
-        if (((String) map.get(Utils.NAME_KEY)).equals("default")) {
-            themeName.setText(mContext.getString(R.string.default_theme));
-        } else {
+//        if (((String) map.get(Utils.NAME_KEY)).equals("default")) {
+//            themeName.setText(mContext.getString(R.string.default_theme));
+//        } else {
             themeName.setText((CharSequence) map.get(Utils.NAME_KEY));
-        }
+//        }
         previewImage.setImageBitmap((Bitmap) map.get(Utils.BITMAP_KEY));
         String name = mContext.getSharedPreferences(
                 Utils.SHARED_PREFRENCE,

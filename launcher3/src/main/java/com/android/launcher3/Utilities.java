@@ -40,6 +40,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PaintFlagsDrawFilter;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -56,10 +57,14 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.Toast;
 
+import com.android.launcher3.theme.Utils;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Random;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -241,10 +246,40 @@ public final class Utilities {
                 debugPaint.setColor(0xffcccc00);
                 canvas.drawRect(left, top, left+width, top+height, debugPaint);
             }
+            SharedPreferences sharePreferences = context.getSharedPreferences(Utils.SHARED_PREFRENCE, Context.MODE_PRIVATE);
+            String key = sharePreferences.getString(Utils.NAME_KEY,"default");
+            Paint paint = new Paint();
 
             sOldBounds.set(icon.getBounds());
             icon.setBounds(left, top, left+width, top+height);
             icon.draw(canvas);
+            Log.d("lxx", "width="+width+" height="+height);
+            if (!key.equals("default")) {
+                paint.setXfermode(new PorterDuffXfermode(android.graphics.PorterDuff.Mode.DST_ATOP));
+                try {
+                    Random rand = new Random();
+                    int[] array = {1, 2, 3, 4, 5};
+                    int idx = rand.nextInt(5);
+                    String path = context.getString(R.string.theme) + "/"
+                            + key + "/" + context.getString(R.string.icon) + "/" + "icon_bg_0" + array[idx] + ".png";
+                    InputStream is = context.getAssets().open(path);
+                    Bitmap backBitmap = BitmapFactory.decodeStream(is);
+                    int backWidth = backBitmap.getWidth();
+                    int backHeight = backBitmap.getHeight();
+                    if (backWidth != width || backHeight != height) {
+                        Matrix matrix = new Matrix();
+                        matrix.postScale((float) width / backWidth, (float) height / backHeight);
+                        canvas.drawBitmap(Bitmap.createBitmap(backBitmap, 0, 0, backWidth, backHeight, matrix, true),
+                                0.0f, 0.0f, paint);
+                    } else {
+                        canvas.drawBitmap(backBitmap, 0.0f, 0.0f, paint);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            canvas.save(Canvas.ALL_SAVE_FLAG);
+            canvas.restore();
             icon.setBounds(sOldBounds);
             canvas.setBitmap(null);
 

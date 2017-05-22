@@ -20,6 +20,7 @@ import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -35,6 +36,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
 import android.os.Handler;
@@ -47,9 +49,15 @@ import com.android.launcher3.compat.LauncherAppsCompat;
 import com.android.launcher3.compat.UserHandleCompat;
 import com.android.launcher3.compat.UserManagerCompat;
 import com.android.launcher3.model.PackageItemInfo;
+import com.android.launcher3.theme.IconBitmapDrawable;
+import com.android.launcher3.theme.Utils;
 import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.Thunk;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -110,6 +118,7 @@ public class IconCache {
     private Bitmap mLowResBitmap;
     private Canvas mLowResCanvas;
     private Paint mLowResPaint;
+    private SharedPreferences mSharedPreferences;
 
     public IconCache(Context context, InvariantDeviceProfile inv) {
         mContext = context;
@@ -120,6 +129,8 @@ public class IconCache {
         mIconDb = new IconDB(context);
 
         mWorkerHandler = new Handler(LauncherModel.getWorkerLooper());
+        mSharedPreferences = context.getSharedPreferences(
+                Utils.SHARED_PREFRENCE, Context.MODE_PRIVATE);
 
         mActivityBgColor = context.getResources().getColor(R.color.quantum_panel_bg_color);
         mPackageBgColor = context.getResources().getColor(R.color.quantum_panel_bg_color_dark);
@@ -134,8 +145,14 @@ public class IconCache {
         return getFullResIcon(Resources.getSystem(), android.R.mipmap.sym_def_app_icon);
     }
 
+    private String convertToIconResName(String input) {
+        return input != null && !input.equals("") ? input.replace('.', '_')
+                .toLowerCase() : input;
+    }
+
     private Drawable getFullResIcon(Resources resources, int iconId) {
         Drawable d;
+        Log.d("lxx", "3333333333333333="+iconId);
         try {
             d = resources.getDrawableForDensity(iconId, mIconDpi);
         } catch (Resources.NotFoundException e) {
@@ -146,6 +163,7 @@ public class IconCache {
     }
 
     public Drawable getFullResIcon(String packageName, int iconId) {
+        Log.d("lxx", "222222222222222222="+packageName);
         Resources resources;
         try {
             resources = mPackageManager.getResourcesForApplication(packageName);
@@ -161,12 +179,43 @@ public class IconCache {
     }
 
     public Drawable getFullResIcon(ActivityInfo info) {
-        Resources resources;
+        Resources resources = null;
+        String iconpath = null;
+        String drawableName;
+        String[] array;
+        List<String> list;
+        String themeKeyname = mSharedPreferences.getString(Utils.NAME_KEY, "default");
+        InputStream is = null ;
         try {
+            drawableName = convertToIconResName(info.name) + ".png";
+            Log.d("lxx", "1111111111111111="+drawableName);
+            array = mContext.getAssets().list(mContext.getString(R.string.theme) + "/" + themeKeyname + "/"
+                    + mContext.getString(R.string.icon));
+            list = Arrays.asList(array);
+            drawableName = convertToIconResName(info.name) + ".png";
+            if (list.contains(drawableName)) {
+                iconpath = mContext.getString(R.string.theme) + "/" + themeKeyname + "/"
+                        + mContext.getString(R.string.icon) + "/"
+                        + drawableName;
+                is = mContext.getAssets().open(iconpath);
+                return new IconBitmapDrawable(
+                        BitmapFactory.decodeStream(is));
+            }
             resources = mPackageManager.getResourcesForApplication(
                     info.applicationInfo);
         } catch (PackageManager.NameNotFoundException e) {
             resources = null;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+
+                }
+            }
         }
         if (resources != null) {
             int iconId = info.getIconResource();
@@ -567,6 +616,38 @@ public class IconCache {
             if (TextUtils.isEmpty(entry.title) && info != null) {
                 entry.title = info.getLabel();
                 entry.contentDescription = mUserManager.getBadgedLabelForUser(entry.title, user);
+            }
+        }
+        String themeKeyname = mSharedPreferences.getString("theme_key", "default");
+        String iconpath;
+        if (!themeKeyname.equals("default")) {
+            String[] array;
+            List<String> list;
+            InputStream is = null ;
+            try {
+                array = mContext.getAssets().list(mContext.getString(R.string.theme) + "/" + themeKeyname + "/"
+                        + mContext.getString(R.string.icon));
+                list = Arrays.asList(array);
+                String drawableName = convertToIconResName(componentName.getClassName()) + ".png";
+                Log.d("lxx", "componentName="+componentName+" drawableName="+drawableName);
+                if (list.contains(drawableName)) {
+                    iconpath = mContext.getString(R.string.theme) + "/" + themeKeyname + "/"
+                            + mContext.getString(R.string.icon) + "/"
+                            + drawableName;
+                    Log.d("lxx", "***********");
+                    is = mContext.getAssets().open(iconpath);
+                    entry.icon = BitmapFactory.decodeStream(is);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (is != null) {
+                    try {
+                        is.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
         return entry;

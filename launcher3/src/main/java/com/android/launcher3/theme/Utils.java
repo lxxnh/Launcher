@@ -35,10 +35,11 @@ public class Utils {
                 HashMap<String, Object> map = new HashMap<String, Object>();
                 map.put(Utils.NAME_KEY, theme);
                 map.put(Utils.BITMAP_KEY, bitmap);
-                if (theme.equals("default"))
+                if (theme.equals("default")) {
                     allThemes.add(0, map);
-                else
+                } else {
                     allThemes.add(map);
+                }
             }
 
         } catch (IOException e) {

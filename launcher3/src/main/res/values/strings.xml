@@ -292,5 +292,7 @@
     <string name="wallpaper">wallpaper</string>
     <string name="apply">apply</string>
     <string name="icon">icon</string>
+    <string name="show_float_button">显示悬浮按钮</string>
+    <string name="float_window">悬浮窗</string>
 
 </resources>

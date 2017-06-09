@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -33,6 +34,9 @@ import android.text.LoginFilter;
 import android.util.Log;
 
 import com.android.launcher3.compat.UserHandleCompat;
+import com.android.launcher3.floatbutton.FloatWindowManager;
+import com.android.launcher3.floatbutton.FloatWindowService;
+import com.android.launcher3.theme.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,9 +64,11 @@ public class SettingsActivity extends Activity {
         private Preference mPrivatePref;
         private Preference mPrivateChangePwdPref;
         private Preference mPrivateReset;
+        private SwitchPreference mFloatButtonPref;
         private SharedPreferences mPreferences;
         private SharedPreferences.Editor mEdit;
         private List<String> mList;
+        private SharedPreferences mSharedPreferences;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -72,10 +78,15 @@ public class SettingsActivity extends Activity {
             SwitchPreference pref = (SwitchPreference) findPreference(
                     Utilities.ALLOW_ROTATION_PREFERENCE_KEY);
             pref.setPersistent(false);
+            mSharedPreferences = getActivity().getSharedPreferences
+                    (LauncherAppState.getSharedPreferencesKey(), Context.MODE_PRIVATE);
+            mSharedPreferences.registerOnSharedPreferenceChangeListener(mSharedPreferenceChangeListener);
 
             mPrivatePref = findPreference(Utilities.PRIVATE_FOLDER_PREFERENCE_KEY);
             mPrivateChangePwdPref = findPreference(Utilities.PRIVATE_CHANGE_PASSWORD_PREFERENCE_KEY);
             mPrivateReset = findPreference(Utilities.PRIVATE_RESET_KEY);
+            mFloatButtonPref = (SwitchPreference) findPreference(Utilities.SHOW_FLOAT_BUTTON_KEY);
+            mFloatButtonPref.setOnPreferenceChangeListener(this);
 
             Bundle extras = new Bundle();
             extras.putBoolean(LauncherSettings.Settings.EXTRA_DEFAULT_VALUE, false);
@@ -93,6 +104,25 @@ public class SettingsActivity extends Activity {
             mList = new ArrayList<String>();
         }
 
+        private final OnSharedPreferenceChangeListener mSharedPreferenceChangeListener = new OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                if (Utils.SHOW_FLOAT_BUTTON.equals(key)) {
+                    updateFloatButtonChecked();
+                }
+            }
+        };
+
+        private void updateFloatButtonChecked() {
+            mFloatButtonPref.setChecked(mSharedPreferences.getBoolean(Utils.SHOW_FLOAT_BUTTON, true));
+        }
+
+        @Override
+        public void onDestroy() {
+            mSharedPreferences.unregisterOnSharedPreferenceChangeListener(mSharedPreferenceChangeListener);
+            super.onDestroy();
+        }
+
         @Override
         public void onResume() {
             super.onResume();
@@ -103,16 +133,30 @@ public class SettingsActivity extends Activity {
             } else {
                 screen.addPreference(mPrivateChangePwdPref);
             }
+            updateFloatButtonChecked();
         }
 
         @Override
         public boolean onPreferenceChange(Preference preference, Object newValue) {
-            Bundle extras = new Bundle();
-            extras.putBoolean(LauncherSettings.Settings.EXTRA_VALUE, (Boolean) newValue);
-            getActivity().getContentResolver().call(
-                    LauncherSettings.Settings.CONTENT_URI,
-                    LauncherSettings.Settings.METHOD_SET_BOOLEAN,
-                    preference.getKey(), extras);
+            String key = preference.getKey();
+            if (Utilities.ALLOW_ROTATION_PREFERENCE_KEY.equals(key)) {
+                Bundle extras = new Bundle();
+                extras.putBoolean(LauncherSettings.Settings.EXTRA_VALUE, (Boolean) newValue);
+                getActivity().getContentResolver().call(
+                        LauncherSettings.Settings.CONTENT_URI,
+                        LauncherSettings.Settings.METHOD_SET_BOOLEAN,
+                        preference.getKey(), extras);
+            } else if (Utilities.SHOW_FLOAT_BUTTON_KEY.equals(key)) {
+                if ((Boolean) newValue) {
+                    Intent intent = new Intent(getContext(), FloatWindowService.class);
+                    getActivity().startService(intent);
+                } else {
+                    FloatWindowManager.removeBigWindow(getContext());
+                    FloatWindowManager.removeSmallWindow(getContext());
+                    Intent intent = new Intent(getContext(), FloatWindowService.class);
+                    getActivity().stopService(intent);
+                }
+            }
             return true;
         }
 

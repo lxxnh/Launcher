@@ -121,6 +121,7 @@ public final class Utilities {
     public static final String PRIVATE_CHANGE_PASSWORD_PREFERENCE_KEY = "pref_private_change_pwd";
     public static final String PRIVATE_RESET_KEY = "pref_private_reset";
     public static final String CHANGE_PWD_FLAG = "change_pwd";
+    public static final String SHOW_FLOAT_BUTTON_KEY = "pref_show_float_button";
     //Change private folder password
     public static final int ALLOW_CHANGE_PWD = 1;
     public static final int NO_CHANGE_PWD = -1;

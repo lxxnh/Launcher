@@ -43,4 +43,9 @@
             android:targetPackage="com.android.launcher3" />
     </Preference>
 
+    <SwitchPreference
+        android:key="pref_show_float_button"
+        android:title="@string/show_float_button"
+        android:defaultValue="@bool/allow_float_button" />
+
 </PreferenceScreen>

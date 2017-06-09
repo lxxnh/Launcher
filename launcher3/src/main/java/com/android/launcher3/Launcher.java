@@ -105,7 +105,10 @@ import com.android.launcher3.compat.LauncherActivityInfoCompat;
 import com.android.launcher3.compat.LauncherAppsCompat;
 import com.android.launcher3.compat.UserHandleCompat;
 import com.android.launcher3.compat.UserManagerCompat;
+import com.android.launcher3.floatbutton.FloatWindowManager;
+import com.android.launcher3.floatbutton.FloatWindowService;
 import com.android.launcher3.model.WidgetsModel;
+import com.android.launcher3.theme.Utils;
 import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.LongArrayMap;
 import com.android.launcher3.util.Thunk;
@@ -467,6 +470,9 @@ public class Launcher extends Activity
 
         setupViews();
         mDeviceProfile.layout(this);
+        if (mSharedPrefs.getBoolean(Utils.SHOW_FLOAT_BUTTON, true)) {
+            startFloatButtonService();
+        }
 
         lockAllApps();
 
@@ -524,6 +530,16 @@ public class Launcher extends Activity
             showFirstRunActivity();
             showFirstRunClings();
         }
+    }
+
+    private void startFloatButtonService() {
+        Intent intent = new Intent(Launcher.this, FloatWindowService.class);
+        startService(intent);
+    }
+
+    private void stopFloatButtonService() {
+        Intent intent = new Intent(Launcher.this, FloatWindowService.class);
+        stopService(intent);
     }
 
     @Override
@@ -2032,6 +2048,7 @@ public class Launcher extends Activity
         mAppWidgetHost = null;
 
         mWidgetsToAdvance.clear();
+        stopFloatButtonService();
 
         TextKeyListener.getInstance().release();
 

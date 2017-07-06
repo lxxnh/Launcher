@@ -48,4 +48,9 @@
         android:title="@string/show_float_button"
         android:defaultValue="@bool/allow_float_button" />
 
+    <SwitchPreference
+        android:key="pref_hide_statusbar"
+        android:title="@string/hide_statusbar"
+        android:defaultValue="@bool/hide_statusbar" />
+
 </PreferenceScreen>

@@ -92,4 +92,5 @@
     <item type="id" name="action_move_screen_forwards" />
     <item type="id" name="action_resize" />
     <bool name="allow_float_button">true</bool>
+    <bool name="hide_statusbar">false</bool>
 </resources>

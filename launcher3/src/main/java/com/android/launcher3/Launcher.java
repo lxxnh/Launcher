@@ -1012,6 +1012,14 @@ public class Launcher extends Activity
         }
 
         super.onResume();
+        boolean hideStatusbar = mSharedPrefs.getBoolean(Utils.HIDE_STATUSBAR, false);
+        WindowManager.LayoutParams lp = this.getWindow().getAttributes();
+        if (hideStatusbar) {
+            lp.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+        } else {
+            lp.flags &= (~WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        }
+        this.getWindow().setAttributes(lp);
 
         // Restore the previous launcher state
         if (mOnResumeState == State.WORKSPACE) {

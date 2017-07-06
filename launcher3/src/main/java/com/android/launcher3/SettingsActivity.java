@@ -65,6 +65,7 @@ public class SettingsActivity extends Activity {
         private Preference mPrivateChangePwdPref;
         private Preference mPrivateReset;
         private SwitchPreference mFloatButtonPref;
+        private SwitchPreference mHideStatusbarPref;
         private SharedPreferences mPreferences;
         private SharedPreferences.Editor mEdit;
         private List<String> mList;
@@ -87,6 +88,8 @@ public class SettingsActivity extends Activity {
             mPrivateReset = findPreference(Utilities.PRIVATE_RESET_KEY);
             mFloatButtonPref = (SwitchPreference) findPreference(Utilities.SHOW_FLOAT_BUTTON_KEY);
             mFloatButtonPref.setOnPreferenceChangeListener(this);
+            mHideStatusbarPref = (SwitchPreference) findPreference(Utilities.HIDE_STATUSBAR_KEY);
+            mHideStatusbarPref.setOnPreferenceChangeListener(this);
 
             Bundle extras = new Bundle();
             extras.putBoolean(LauncherSettings.Settings.EXTRA_DEFAULT_VALUE, false);
@@ -156,6 +159,8 @@ public class SettingsActivity extends Activity {
                     Intent intent = new Intent(getContext(), FloatWindowService.class);
                     getActivity().stopService(intent);
                 }
+            } else if (Utilities.HIDE_STATUSBAR_KEY.equals(key)) {
+                mSharedPreferences.edit().putBoolean(Utils.HIDE_STATUSBAR, (Boolean) newValue).commit();
             }
             return true;
         }

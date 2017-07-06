@@ -22,6 +22,7 @@ public class Utils {
     public static final String BITMAP_KEY = "bitmap_key";
     public static final String SHARED_PREFRENCE = "com.android.mlauncher.prefs";
     public static final String SHOW_FLOAT_BUTTON = "show_float_button";
+    public static final String HIDE_STATUSBAR = "hide_statusbar";
 
     public static List<HashMap<String, Object>> getThemes(Context context) {
         List<HashMap<String, Object>> allThemes = new ArrayList<HashMap<String, Object>>();

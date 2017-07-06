@@ -45,6 +45,7 @@ import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
@@ -54,6 +55,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -66,10 +68,14 @@ import android.os.Message;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.os.UserHandle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Selection;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.method.TextKeyListener;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -93,6 +99,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Advanceable;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -110,9 +118,11 @@ import com.android.launcher3.floatbutton.FloatWindowService;
 import com.android.launcher3.model.WidgetsModel;
 import com.android.launcher3.theme.Utils;
 import com.android.launcher3.util.ComponentKey;
+import com.android.launcher3.util.DensityUtil;
 import com.android.launcher3.util.LongArrayMap;
 import com.android.launcher3.util.Thunk;
 import com.android.launcher3.widget.PendingAddWidgetInfo;
+import com.android.launcher3.widget.PopupRvAdapter;
 import com.android.launcher3.widget.WidgetHostViewLoader;
 import com.android.launcher3.widget.WidgetsContainerView;
 
@@ -124,6 +134,7 @@ import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -407,6 +418,8 @@ public class Launcher extends Activity
         }
     };
 
+    private HeadSetBroadcastReceiver headSetBroadcastReceiver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (DEBUG_STRICT_MODE) {
@@ -530,6 +543,7 @@ public class Launcher extends Activity
             showFirstRunActivity();
             showFirstRunClings();
         }
+        registerHeadsetReceiver();
     }
 
     private void startFloatButtonService() {
@@ -2073,6 +2087,7 @@ public class Launcher extends Activity
         if (mLauncherCallbacks != null) {
             mLauncherCallbacks.onDestroy();
         }
+        unregisterReceiver(headSetBroadcastReceiver);
     }
 
     public DragController getDragController() {
@@ -4820,6 +4835,102 @@ public class Launcher extends Activity
                 }
             }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void) null);
         }
+    }
+
+
+    private void registerHeadsetReceiver() {
+        headSetBroadcastReceiver = new HeadSetBroadcastReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("android.intent.action.HEADSET_PLUG");
+        registerReceiver(headSetBroadcastReceiver,filter);
+    }
+
+    class HeadSetBroadcastReceiver extends BroadcastReceiver {
+
+        private int num = 0;
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(Intent.ACTION_HEADSET_PLUG)) {
+                num++;
+                if(intent.hasExtra("state") && num > 1) {
+                    if(intent.getIntExtra("state", 2) == 0) {
+                        //Toast.makeText(context, "耳机已拔出", Toast.LENGTH_SHORT).show();
+                        if (popupWindow != null){
+                            popupWindow.dismiss();
+                        }
+                    } else if(intent.getIntExtra("state", 2) == 1) {
+                        //Toast.makeText(context, "耳机已插入", Toast.LENGTH_SHORT).show();
+                        if (popupWindow != null && popupWindow.isShowing()){
+                            return;
+                        }else {
+                            showPopWindow();
+                        }
+                    }
+                }
+            }
+        }
+    }
+    private PopupWindow popupWindow;
+    private void showPopWindow(){
+        View view = View.inflate(this,R.layout.popupwindow,null);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.rv_popup);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        recyclerView.setLayoutManager(layoutManager);
+        audioAppLists = getAudioAppInfo();
+        PopupRvAdapter adapter = new PopupRvAdapter(this,audioAppLists);
+        recyclerView.setAdapter(adapter);
+        adapter.setItemClickListener(new PopupRvAdapter.MyItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                startActivity(getPackageManager().getLaunchIntentForPackage(audioAppLists.get(position).getPackageName()));
+                if (popupWindow != null){
+                    popupWindow.dismiss();
+                }
+            }
+        });
+        popupWindow = new PopupWindow(view, getScreenPixels() - 50,
+                DensityUtil.dip2px(this,100),true);
+        popupWindow.setFocusable(true);
+        popupWindow.setBackgroundDrawable(new BitmapDrawable());
+        popupWindow.setAnimationStyle(R.style.popwindow_anim_style);
+        popupWindow.showAtLocation(findViewById(R.id.launcher),Gravity.TOP,0,0);
+    }
+
+    public int getScreenPixels() {
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        return metrics.widthPixels;
+    }
+    List<AudioAppInfo> audioAppLists;
+    private List<AudioAppInfo> getAudioAppInfo() {
+        List<AudioAppInfo> audioAppInfos = new ArrayList<>();
+        PackageManager pm = getApplication().getPackageManager();
+        List<PackageInfo> packageInfos = pm.getInstalledPackages(PackageManager.GET_UNINSTALLED_PACKAGES);
+        for(PackageInfo packageInfo : packageInfos){
+            String packageName = packageInfo.packageName;
+            PackageInfo pi;
+            try {
+                pi = pm.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS);
+                String[] permissions = pi.requestedPermissions;
+                if(permissions != null){
+                    List<String> lists = new ArrayList<>();
+                    Collections.addAll(lists, permissions);
+                    if (lists.contains("android.permission.RECORD_AUDIO") &&
+                            lists.contains("android.permission.WRITE_EXTERNAL_STORAGE")){
+                        String appName = packageInfo.applicationInfo.loadLabel(pm).toString();
+                        Drawable drawable = packageInfo.applicationInfo.loadIcon(pm);
+                        AudioAppInfo audioAppInfo = new AudioAppInfo(appName,packageName,drawable);
+                        audioAppInfos.add(audioAppInfo);
+                    }
+                }
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        return audioAppInfos;
     }
 }
 

@@ -286,6 +286,7 @@
     <string name="wallpaper_pick">壁纸</string>
     <string name="lock_screen_pick">锁屏</string>
     <string name="personalized_setting">个性化设置</string>
+    <string name="desktop_setting">默认桌面设置</string>
     <string name="theme">theme</string>
     <string name="preview">preview</string>
     <string name="default_theme">kiss</string>

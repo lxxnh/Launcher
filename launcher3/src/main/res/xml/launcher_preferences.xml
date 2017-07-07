@@ -17,6 +17,10 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:key="pref_screen">
 
+    <Preference
+        android:key="pref_defaut_des_set"
+        android:title="@string/desktop_setting"/>
+
     <SwitchPreference
             android:key="pref_allowRotation"
             android:title="@string/allow_rotation_title"

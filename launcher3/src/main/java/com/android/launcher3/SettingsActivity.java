@@ -18,12 +18,15 @@ package com.android.launcher3;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
@@ -64,6 +67,7 @@ public class SettingsActivity extends Activity {
         private Preference mPrivatePref;
         private Preference mPrivateChangePwdPref;
         private Preference mPrivateReset;
+        private Preference mDefaultDesSet;
         private SwitchPreference mFloatButtonPref;
         private SwitchPreference mHideStatusbarPref;
         private SharedPreferences mPreferences;
@@ -86,10 +90,15 @@ public class SettingsActivity extends Activity {
             mPrivatePref = findPreference(Utilities.PRIVATE_FOLDER_PREFERENCE_KEY);
             mPrivateChangePwdPref = findPreference(Utilities.PRIVATE_CHANGE_PASSWORD_PREFERENCE_KEY);
             mPrivateReset = findPreference(Utilities.PRIVATE_RESET_KEY);
+            mDefaultDesSet = findPreference(Utilities.DEFAULT_DES_SET_KEY);
             mFloatButtonPref = (SwitchPreference) findPreference(Utilities.SHOW_FLOAT_BUTTON_KEY);
             mFloatButtonPref.setOnPreferenceChangeListener(this);
             mHideStatusbarPref = (SwitchPreference) findPreference(Utilities.HIDE_STATUSBAR_KEY);
             mHideStatusbarPref.setOnPreferenceChangeListener(this);
+
+            if("com.android.launcher3".equals(getLauncherPackageName(getContext()))){
+                getPreferenceScreen().removePreference(mDefaultDesSet);
+            }
 
             Bundle extras = new Bundle();
             extras.putBoolean(LauncherSettings.Settings.EXTRA_DEFAULT_VALUE, false);
@@ -103,6 +112,7 @@ public class SettingsActivity extends Activity {
             mPrivatePref.setOnPreferenceClickListener(this);
             mPrivateChangePwdPref.setOnPreferenceClickListener(this);
             mPrivateReset.setOnPreferenceClickListener(this);
+            mDefaultDesSet.setOnPreferenceClickListener(this);
             mPreferences = getContext().getSharedPreferences(LauncherFiles.SHARED_PREFERENCES_KEY, Context.MODE_MULTI_PROCESS);
             mList = new ArrayList<String>();
         }
@@ -212,6 +222,13 @@ public class SettingsActivity extends Activity {
                 });
                 builder.create().show();
             }
+            if(preference == mDefaultDesSet){
+                Intent  paramIntent = new Intent("android.intent.action.MAIN");
+                paramIntent.setComponent(new ComponentName("android", "com.android.internal.app.ResolverActivity"));
+                paramIntent.addCategory("android.intent.category.DEFAULT");
+                paramIntent.addCategory("android.intent.category.HOME");
+                startActivity(paramIntent);
+            }
 
             return true;
         }
@@ -224,5 +241,26 @@ public class SettingsActivity extends Activity {
             mEdit.putString(Utilities.PRIVATE_PWD,"");
             mEdit.commit();
         }
+
+        /**
+         * 获取正在运行桌面包名（注：存在多个桌面时且未指定默认桌面时，该方法返回Null）
+         */
+        public static String getLauncherPackageName(Context context) {
+            final Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            final ResolveInfo res = context.getPackageManager().resolveActivity(intent, 0);
+            Log.d("xjr", "activityInfo.packageName = " + res.activityInfo.packageName);
+            if (res.activityInfo == null) {
+                // should not happen. A home is always installed, isn't it?
+                return null;
+            }
+            if (res.activityInfo.packageName.equals("android")) {
+                // 有多个桌面程序存在，且未指定默认项时；
+                return null;
+            } else {
+                return res.activityInfo.packageName;
+            }
+        }
+
     }
 }

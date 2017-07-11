@@ -100,5 +100,29 @@
         <item name="android:windowExitAnimation">@anim/pop_exit_anim</item>
         <!-- 指定消失的动画xml -->
     </style>
+    <!--<style name="Transparent">
+        <item name="android:windowBackground">@color/transparent_background</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
+    </style>-->
 
+    <style name="Transparent">
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="BaordSwitchBaseText">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="BoardSwitchItemText" parent="BaordSwitchBaseText">
+        <item name="android:paddingBottom">20dp</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:drawablePadding">5dp</item>
+    </style>
 </resources>

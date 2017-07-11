@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="@drawable/board_bg"
+              android:gravity="center"
+              android:orientation="horizontal"
+              android:id="@+id/appwidget_layout">
+
+    <ImageButton
+        android:id="@+id/wifi_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/board_wifi_on"/>
+
+    <ImageButton
+        android:id="@+id/light_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/board_light_auto"/>
+
+    <ImageButton
+        android:id="@+id/gprs_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/board_gprs_off"/>
+
+    <ImageButton
+        android:id="@+id/sound_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/board_sound_on"/>
+
+    <ImageButton
+        android:id="@+id/flash_light_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/board_flash_light_on"/>
+
+    <ImageButton
+        android:id="@+id/menu_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/board_menu"/>
+
+</LinearLayout>

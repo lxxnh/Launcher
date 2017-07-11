@@ -30,6 +30,7 @@ import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.app.SearchManager;
+import android.appwidget.AppWidgetHost;
 import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
@@ -227,6 +228,7 @@ public class Launcher extends Activity
     private static final String QSB_WIDGET_PROVIDER = "qsb_widget_provider";
 
     public static final String USER_HAS_MIGRATED = "launcher.user_migrated_from_old_data";
+    private static final int MSG_LOAD_CUSTOM_WIDGETS = 145;
 
     /** The different states that Launcher can be in. */
     enum State { NONE, WORKSPACE, APPS, APPS_SPRING_LOADED, WIDGETS, WIDGETS_SPRING_LOADED }
@@ -506,6 +508,8 @@ public class Launcher extends Activity
                 // configuration change) while launcher is in the foreground
                 mModel.startLoader(mWorkspace.getRestorePage());
             }
+            // To load custom widgets delay.
+            mHandler.sendEmptyMessageDelayed(MSG_LOAD_CUSTOM_WIDGETS, 1000);
         }
 
         // For handling default keys
@@ -1834,10 +1838,68 @@ public class Launcher extends Activity
                     i++;
                 }
                 sendAdvanceMessage(mAdvanceInterval);
+            } else if (msg.what == MSG_LOAD_CUSTOM_WIDGETS) {
+                loadCustomWidgets();
             }
             return true;
         }
     });
+
+    /**
+     * Load custom widgets. Currently there is only one widget, {@link com.android.launcher3.appwidget.SwitchBoardProvider}
+     */
+    private void loadCustomWidgets() {
+        mWorkspace.insertNewWorkspaceScreen(0);
+
+        AppWidgetManager appWidgetManager =
+                AppWidgetManager.getInstance(getApplicationContext());
+        List<AppWidgetProviderInfo> providers = appWidgetManager.getInstalledProviders();
+        if (providers == null) {
+            Log.e(TAG, "failed to find installed widgets ");
+            return;
+        }
+        int providerCount = providers.size();
+        AppWidgetProviderInfo appWidgetProviderInfo = null;
+
+        for (int i = 0; i < providerCount ; i++) {
+            ComponentName provider = providers.get(i).provider;
+
+            if (provider != null && provider.getPackageName().
+                    equals("com.android.launcher3")) {
+                appWidgetProviderInfo = providers.get(i);
+                break;
+            }
+        }
+        if (appWidgetProviderInfo == null) {
+            Log.e(TAG, "failed to find recommendations widget");
+            return;
+        }
+
+        if (appWidgetProviderInfo != null) {
+            mPendingAddWidgetInfo = LauncherAppWidgetProviderInfo.fromProviderInfo(
+                    this, appWidgetProviderInfo);
+            PendingAddWidgetInfo info = new PendingAddWidgetInfo(this,
+                    mPendingAddWidgetInfo, null);
+            info.icon = R.drawable.board_menu;
+            info.previewImage = R.drawable.board_menu;
+            info.id = ItemInfo.NO_ID;
+            info.container = LauncherSettings.Favorites.CONTAINER_DESKTOP;
+            info.itemType = LauncherSettings.Favorites.ITEM_TYPE_APPWIDGET;
+            info.screenId = 0;
+            info.cellX = 0;
+            info.cellY = 2;
+            info.spanX = 5;
+            info.spanY = 1;
+            info.title = "switch";
+            info.user = UserHandleCompat.myUserHandle();
+            info.componentName = new ComponentName("com.android.launcher3",
+                    "com.android.launcher3.appwidget.SwitchBoardProvider");
+            addPendingItem(info, info.container, info.screenId,
+                    new int[]{info.cellX, info.cellY}, info.spanX, info.spanY);
+        } else {
+            Log.e(TAG, "appWidgetInfo is null ");
+        }
+    }
 
     void addWidgetToAutoAdvanceIfNeeded(View hostView, AppWidgetProviderInfo appWidgetInfo) {
         if (appWidgetInfo == null || appWidgetInfo.autoAdvanceViewId == -1) return;

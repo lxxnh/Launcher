@@ -1452,6 +1452,7 @@ public class LauncherModel extends BroadcastReceiver
 
             if (!mWorkspaceLoaded) {
                 loadWorkspace();
+                loadCustomWidget();
                 synchronized (LoaderTask.this) {
                     if (mStopped) {
                         return;
@@ -1462,6 +1463,10 @@ public class LauncherModel extends BroadcastReceiver
 
             // Bind the workspace
             bindWorkspace(-1);
+        }
+
+        private void loadCustomWidget() {
+
         }
 
         private void waitForIdle() {
